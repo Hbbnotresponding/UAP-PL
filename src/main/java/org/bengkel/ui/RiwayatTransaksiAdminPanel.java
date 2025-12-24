@@ -8,16 +8,19 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
-public class RiwayatTransaksiAdminFrame extends JFrame {
+public class RiwayatTransaksiAdminPanel extends JPanel {
 
     JTable table;
     DefaultTableModel model;
 
-    public RiwayatTransaksiAdminFrame() {
-        setTitle("Riwayat Transaksi - Admin");
-        setSize(800, 400);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    public RiwayatTransaksiAdminPanel() {
+        setLayout(new BorderLayout());
+        setBackground(new Color(236, 240, 245));
+        setBorder(new EmptyBorder(20, 20, 20, 20));
+
+        JLabel title = new JLabel("Riwayat Transaksi");
+        title.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        add(title, BorderLayout.NORTH);
 
         DataManager.loadTransaksi();
 
@@ -28,14 +31,10 @@ public class RiwayatTransaksiAdminFrame extends JFrame {
 
         model = new DefaultTableModel(col, 0);
         table = new JTable(model);
-
         loadData();
 
         JScrollPane scroll = new JScrollPane(table);
-        scroll.setBorder(new EmptyBorder(10, 10, 10, 10));
-
         add(scroll, BorderLayout.CENTER);
-        setVisible(true);
     }
 
     void loadData() {

@@ -1,58 +1,111 @@
-package bengkel.ui;
+package org.bengkel.ui;
 
 import org.bengkel.model.User;
 import org.bengkel.util.DataManager;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class LoginFrame extends JFrame {
 
+    JTextField txtUsername;
+    JPasswordField txtPassword;
+    JComboBox<String> cmbRole;
+
     public LoginFrame() {
-        setTitle("Bengkel App - Login");
-        setSize(400,300);
+        setTitle("Login | Bengkel Anugrah Motor");
+        setSize(450, 550);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(new Color(30,30,60));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10,10,10,10);
+        Color tosca = new Color(0, 137, 132);
+        Color kuning = new Color(255, 171, 0);
 
-        JLabel lblTitle = new JLabel("SISTEM BENGKEL");
-        lblTitle.setForeground(Color.WHITE);
+        JPanel mainPanel = new JPanel();
+        mainPanel.setBackground(tosca);
+        mainPanel.setLayout(new BorderLayout());
+
+        // ===== LOGO =====
+        JLabel lblLogo = new JLabel("🔧", SwingConstants.CENTER);
+        lblLogo.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 80));
+        lblLogo.setForeground(Color.WHITE);
+
+        JLabel lblTitle = new JLabel("BENGKEL\nANUGRAH MOTOR", SwingConstants.CENTER);
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        lblTitle.setForeground(kuning);
 
-        JTextField txtUser = new JTextField(15);
-        JPasswordField txtPass = new JPasswordField(15);
-        JButton btnLogin = new JButton("LOGIN");
+        JPanel logoPanel = new JPanel(new GridLayout(2,1));
+        logoPanel.setOpaque(false);
+        logoPanel.add(lblLogo);
+        logoPanel.add(lblTitle);
 
-        btnLogin.setBackground(new Color(70,130,180));
-        btnLogin.setForeground(Color.WHITE);
+        mainPanel.add(logoPanel, BorderLayout.NORTH);
 
-        gbc.gridy=0; panel.add(lblTitle,gbc);
-        gbc.gridy=1; panel.add(txtUser,gbc);
-        gbc.gridy=2; panel.add(txtPass,gbc);
-        gbc.gridy=3; panel.add(btnLogin,gbc);
+        // ===== FORM =====
+        JPanel formPanel = new JPanel();
+        formPanel.setBackground(kuning);
+        formPanel.setBorder(new EmptyBorder(30,30,30,30));
+        formPanel.setLayout(new GridLayout(5,1,10,10));
 
-        btnLogin.addActionListener(e -> {
-            User user = DataManager.login(
-                    txtUser.getText(),
-                    new String(txtPass.getPassword())
-            );
+        txtUsername = new JTextField();
+        txtUsername.setBorder(BorderFactory.createTitledBorder("Username"));
 
-            if (user != null) {
-                dispose();
-                if (user.getRole().equals("ADMIN"))
-                    new AdminDashboard(user);
-                else
-                    new UserDashboard(user);
-            } else {
-                JOptionPane.showMessageDialog(this,"Login gagal");
-            }
+        txtPassword = new JPasswordField();
+        txtPassword.setBorder(BorderFactory.createTitledBorder("Password"));
+
+        cmbRole = new JComboBox<>(new String[]{
+                "==== Login Sebagai ====",
+                "ADMIN",
+                "USER"
         });
 
-        add(panel);
+        JButton btnLogin = new JButton("Masuk");
+        btnLogin.setBackground(tosca);
+        btnLogin.setForeground(Color.WHITE);
+        btnLogin.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnLogin.setFocusPainted(false);
+
+        btnLogin.addActionListener(e -> login());
+
+        formPanel.add(txtUsername);
+        formPanel.add(txtPassword);
+        formPanel.add(cmbRole);
+        formPanel.add(new JLabel());
+        formPanel.add(btnLogin);
+
+        JPanel center = new JPanel(new GridBagLayout());
+        center.setOpaque(false);
+        center.add(formPanel);
+
+        mainPanel.add(center, BorderLayout.CENTER);
+
+        add(mainPanel);
         setVisible(true);
+    }
+
+    private void login() {
+        if (cmbRole.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(this, "Pilih role login!");
+            return;
+        }
+
+        User user = DataManager.login(
+                txtUsername.getText(),
+                new String(txtPassword.getPassword())
+        );
+
+        if (user != null && user.getRole().equalsIgnoreCase(cmbRole.getSelectedItem().toString())) {
+            JOptionPane.showMessageDialog(this, "Login berhasil");
+
+            if (user.getRole().equalsIgnoreCase("ADMIN")) {
+                new AdminDashboard();
+            } else {
+                new UserDashboard();
+            }
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Login gagal");
+        }
     }
 }
