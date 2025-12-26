@@ -6,6 +6,7 @@ import org.bengkel.util.DataManager;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
 
 public class FormTransaksi extends JFrame {
@@ -22,12 +23,13 @@ public class FormTransaksi extends JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        Color tosca = new Color(0, 137, 132);
+        Color merah = new Color(137, 0, 37);
         Color bg = new Color(245, 247, 250);
+        Color orange = new Color(243, 156, 18);
 
         // ================= HEADER =================
         JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(tosca);
+        header.setBackground(merah);
         header.setPreferredSize(new Dimension(0, 50));
         header.setBorder(new EmptyBorder(0, 15, 0, 15));
 
@@ -69,11 +71,24 @@ public class FormTransaksi extends JFrame {
         JButton btnHitung = new JButton("Hitung");
         JButton btnSimpan = new JButton("Simpan & Cetak Struk");
 
-        styleButton(btnHitung, new Color(52, 152, 219));
-        styleButton(btnSimpan, tosca);
+        styleButton(btnHitung, orange);
+        styleButton(btnSimpan, merah);
 
         btnHitung.addActionListener(e -> hitung());
         btnSimpan.addActionListener(e -> simpan());
+
+        btnHitung.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(MouseEvent evt) {
+                btnHitung.setBackground(Color.orange.darker());
+                btnSimpan.setBackground(Color.red.darker());
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnHitung.setBackground(Color.ORANGE);
+                btnSimpan.setBackground(Color.red);
+            }
+        });
+
 
         buttonPanel.add(btnHitung);
         buttonPanel.add(btnSimpan);
