@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -20,24 +21,52 @@ public class AdminDashboard extends JFrame {
         setLayout(new BorderLayout());
 
         // ================= WARNA =================
-        Color colorTosca = new Color(0, 137, 132);
-        Color colorSidebar = new Color(51, 122, 183);
+        Color colorMerah = new Color(137, 0, 37);
+        Color colorSidebar = new Color(255, 255, 255);
         Color colorOrange = new Color(243, 156, 18);
         Color colorBg = new Color(236, 240, 245);
 
         // ================= NAVBAR =================
         JPanel navbar = new JPanel(new BorderLayout());
-        navbar.setBackground(colorTosca);
-        navbar.setPreferredSize(new Dimension(5, 60));
+        navbar.setBackground(colorMerah);
+        navbar.setPreferredSize(new Dimension(50, 100));
 
-        JLabel brand = new JLabel("  = UMM MOTORS =", JLabel.LEFT);
+        //======== Logo =========
+        JPanel navLeft =new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 15));
+        navLeft.setOpaque(false);
+
+        ImageIcon logoIcon = new ImageIcon(
+                getClass().getResource("/images/logo.png")
+        );
+
+        Image img = logoIcon.getImage();
+
+        int targetHeight = 80;
+        int targetWidth = (img.getWidth(null) * targetHeight) / img.getHeight(null);
+
+        Image scaled = img.getScaledInstance(
+                targetWidth,
+                targetHeight,
+                Image.SCALE_SMOOTH
+        );
+
+        JLabel logoLabel = new JLabel(new ImageIcon(scaled));
+
+
+
+        //======== BRAND ======
+        JLabel brand = new JLabel("MOTORS");
         brand.setForeground(Color.WHITE);
-        brand.setFont(new Font("Segoe UI", Font.BOLD, 37));
+        brand.setFont(new Font("Segoe UI", Font.BOLD, 32));
 
+        navLeft.add(logoLabel);
+        navLeft.add(brand);
+
+        //======= ADMIN INFO =======
         JLabel adminInfo = new JLabel("Administrator ▼  ", JLabel.RIGHT);
         adminInfo.setForeground(Color.WHITE);
 
-        navbar.add(brand, BorderLayout.WEST);
+        navbar.add(navLeft, BorderLayout.WEST);
         navbar.add(adminInfo, BorderLayout.EAST);
 
         // ================= SIDEBAR =================
@@ -49,12 +78,12 @@ public class AdminDashboard extends JFrame {
 
         JPanel sideHeader = new JPanel(new GridLayout(2, 1));
         sideHeader.setBackground(colorOrange);
-        sideHeader.setMaximumSize(new Dimension(375, 100));
+        sideHeader.setMaximumSize(new Dimension(475, 120));
         sideHeader.setBorder(new EmptyBorder(10, 15, 10, 15));
 
         JLabel lblApp = new JLabel("Informasi Bengkel");
         lblApp.setForeground(Color.WHITE);
-        lblApp.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        lblApp.setFont(new Font("Segoe UI", Font.BOLD, 25));
 
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter =
@@ -125,7 +154,7 @@ public class AdminDashboard extends JFrame {
 
         // ================= FOOTER =================
         JPanel footer = new JPanel();
-        footer.setBackground(colorTosca);
+        footer.setBackground(colorMerah);
 
         JLabel lblFooter = new JLabel("BENGKEL UMM MOTORS");
         lblFooter.setForeground(Color.WHITE);
@@ -145,9 +174,9 @@ public class AdminDashboard extends JFrame {
     // ================= HELPER =================
     private JButton createMenuButton(String text, Color bg) {
         JButton btn = new JButton(text);
-        btn.setMargin(new Insets(5, 15, 5, 5));
-        btn.setMaximumSize(new Dimension(350, 50));
-        btn.setMinimumSize(new Dimension(350, 50));
+        btn.setMargin(new Insets(10, 15, 10, 10));
+        btn.setMaximumSize(new Dimension(400, 120));
+        btn.setMinimumSize(new Dimension(400, 120));
         btn.setForeground(new Color(5, 5, 5));
         btn.setBackground(Color.WHITE);
         btn.setFocusPainted(false);
