@@ -1,25 +1,238 @@
-package bengkel.ui;
+package org.bengkel.ui;
 
-import org.bengkel.model.User;
+import org.bengkel.model.Transaksi;
+import org.bengkel.util.DataManager;
+
 import javax.swing.*;
+import javax.swing.border.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class UserDashboard extends JFrame {
 
-    public UserDashboard(User user) {
-        setTitle("User Dashboard");
-        setSize(400,250);
+    public UserDashboard() {
+        setTitle("Dashboard Pelanggan - UMM Motors");
+        setSize(1100, 650);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout());
 
-        JButton btnRiwayat = new JButton("Riwayat Servis");
-        JButton btnStruk = new JButton("Lihat Struk");
+        // ===== WARNA TEMA =====
+        Color merah = new Color(137, 0, 37);
+        Color putih = Color.WHITE;
+        Color orange = new Color(243, 156, 18);
+        Color bg = new Color(245, 247, 250);
 
-        setLayout(new GridLayout(2,1,10,10));
-        add(btnRiwayat);
-        add(btnStruk);
+        // ================= HEADER =================
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBackground(merah);
+        header.setPreferredSize(new Dimension(0, 55));
+        header.setBorder(new EmptyBorder(0, 20, 0, 20));
 
-        btnStruk.addActionListener(e -> new StrukFrame());
+        JLabel logoLabel = new JLabel();
+        URL logoURL = getClass().getClassLoader()
+                .getResource("image/logo_bengkel.png");
+
+        if (logoURL != null) {
+            ImageIcon icon = new ImageIcon(logoURL);
+            Image img = icon.getImage();
+
+            int targetHeight = 45;
+            int targetWidth = (img.getWidth(null) * targetHeight)
+                    / img.getHeight(null);
+
+            Image scaled = img.getScaledInstance(
+                    targetWidth,
+                    targetHeight,
+                    Image.SCALE_SMOOTH
+            );
+
+            logoLabel.setIcon(new ImageIcon(scaled));
+        } else {
+            System.out.println("⚠ Logo tidak ditemukan!");
+        }
+
+        JLabel lblTitle = new JLabel("UMM MOTORS");
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        lblTitle.setForeground(Color.WHITE);
+
+        JLabel lblDate = new JLabel(
+                LocalDateTime.now().format(
+                        DateTimeFormatter.ofPattern("EEEE, dd MMM yyyy HH:mm")
+                )
+        );
+        lblDate.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lblDate.setForeground(Color.WHITE);
+
+        // ===== LEFT HEADER (LOGO + TITLE) =====
+        JPanel leftHeader = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        leftHeader.setOpaque(false);
+        leftHeader.add(logoLabel);
+        leftHeader.add(lblTitle);
+
+        header.add(leftHeader, BorderLayout.WEST);
+        header.add(lblDate, BorderLayout.EAST);
+
+        add(header, BorderLayout.NORTH);
+
+        // ================= SIDEBAR =================
+        JPanel sidebar = new JPanel();
+        sidebar.setBackground(putih);
+        sidebar.setPreferredSize(new Dimension(200, 0));
+        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
+        sidebar.setBorder(new EmptyBorder(20, 10, 20, 10));
+
+        sidebar.add(createMenuButton("Beranda"));
+
+        JButton btnRiwayat = createMenuButton("Riwayat Servis");
+        btnRiwayat.addActionListener(e -> new RiwayatServisFrame());
+        sidebar.add(btnRiwayat);
+
+        JButton btnStruk = createMenuButton("Lihat Struk");
+        btnStruk.addActionListener(e -> {
+            DataManager.loadTransaksi();
+
+            Transaksi t = DataManager.getLastTransaksi();
+            if (t == null){
+                JOptionPane.showMessageDialog(this, "Belum ada transaksi!");
+                return;
+            }
+
+            new StrukFrame(t);
+        });
+        sidebar.add(btnStruk);
+        add(sidebar, BorderLayout.WEST);
+        setVisible(true);
+
+        // ================= CONTENT =================
+        JPanel content = new JPanel(new BorderLayout());
+        content.setBackground(bg);
+        content.setBorder(new EmptyBorder(20, 20, 20, 20));
+
+        JLabel lblHeader = new JLabel("Beranda");
+        lblHeader.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        content.add(lblHeader, BorderLayout.NORTH);
+
+        JPanel cardPanel = new JPanel(new GridLayout(1, 2, 20, 0));
+        cardPanel.setOpaque(false);
+        cardPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
+
+        cardPanel.add(createCard(
+                "Riwayat Servis",
+                "Lihat daftar servis kendaraan Anda",
+                orange,
+                () -> new RiwayatServisFrame()
+        ));
+
+        cardPanel.add(createCard(
+                "Lihat Struk",
+                "Cetak struk pembayaran terakhir",
+                putih,
+                () -> {
+                    DataManager.loadTransaksi();
+
+                    Transaksi t = DataManager.getLastTransaksi();
+
+                    if (t == null){
+                        JOptionPane.showMessageDialog(this, "Belum ada transaksi!");
+                        return;
+                    }
+
+                    new StrukFrame(t);
+                }
+        ));
+
+        content.add(cardPanel, BorderLayout.CENTER);
+        add(content, BorderLayout.CENTER);
+
+        // ================= FOOTER =================
+        JPanel footer = new JPanel();
+        footer.setBackground(merah);
+        footer.setPreferredSize(new Dimension(0, 30));
+
+        JLabel lblFooter = new JLabel("© BENGKEL UMM MOTORS");
+        lblFooter.setForeground(Color.WHITE);
+        lblFooter.setFont(new Font("Arial", Font.PLAIN, 11));
+
+        footer.add(lblFooter);
+        add(footer, BorderLayout.SOUTH);
 
         setVisible(true);
+    }
+
+    // ================= MENU BUTTON =================
+    private JButton createMenuButton(String text) {
+        Color normal = Color.WHITE;
+        Color hover = new Color(230, 240, 250);
+
+        JButton btn = new JButton(text);
+        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        btn.setBackground(normal);
+        btn.setFocusPainted(false);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setBorder(new EmptyBorder(8, 15, 8, 15));
+
+        btn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                btn.setBackground(hover);
+            }
+
+            public void mouseExited(MouseEvent e) {
+                btn.setBackground(normal);
+            }
+        });
+
+        return btn;
+    }
+
+    // ================= CARD =================
+    private JPanel createCard(String title, String desc, Color accent, Runnable action) {
+        JPanel card = new JPanel();
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setBackground(Color.WHITE);
+        card.setBorder(new CompoundBorder(
+                new LineBorder(new Color(220, 220, 220), 1, true),
+                new EmptyBorder(20, 20, 20, 20)
+        ));
+        card.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        JLabel lblTitle = new JLabel(title);
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
+
+        JLabel lblDesc = new JLabel(desc);
+        lblDesc.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lblDesc.setForeground(Color.GRAY);
+
+        JLabel line = new JLabel();
+        line.setOpaque(true);
+        line.setBackground(accent);
+        line.setPreferredSize(new Dimension(0, 4));
+
+        // === Mouse Adapter ===
+        MouseAdapter clickAdapter = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                action.run();
+            }
+        };
+
+        card.addMouseListener(clickAdapter);
+        lblTitle.addMouseListener(clickAdapter);
+        lblDesc.addMouseListener(clickAdapter);
+        line.addMouseListener(clickAdapter);
+
+        card.add(lblTitle);
+        card.add(Box.createVerticalStrut(5));
+        card.add(lblDesc);
+        card.add(Box.createVerticalStrut(15));
+        card.add(line);
+
+        return card;
     }
 }

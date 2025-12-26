@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class RiwayatServisFrame extends JFrame {
@@ -72,12 +73,14 @@ public class RiwayatServisFrame extends JFrame {
 
         btnDetail.addActionListener(e -> lihatStruk());
 
-        btnDetail.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(MouseEvent evt) {
+        btnDetail.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
                 btnDetail.setBackground(merah.darker());
             }
 
-            public void mouseExited(MouseEvent evt) {
+            @Override
+            public void mouseExited(MouseEvent e) {
                 btnDetail.setBackground(merah);
             }
         });
@@ -88,6 +91,7 @@ public class RiwayatServisFrame extends JFrame {
         setVisible(true);
     }
 
+    // ================= DATA =================
     private void loadData() {
         DataManager.loadTransaksi();
         model.setRowCount(0);
@@ -103,6 +107,7 @@ public class RiwayatServisFrame extends JFrame {
         }
     }
 
+    // ================= STRUK =================
     private void lihatStruk() {
         int row = table.getSelectedRow();
         if (row == -1) {
