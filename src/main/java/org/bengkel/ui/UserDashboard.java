@@ -1,6 +1,7 @@
 package org.bengkel.ui;
 
 import org.bengkel.util.DataManager;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -19,14 +20,14 @@ public class UserDashboard extends JFrame {
         setLayout(new BorderLayout());
 
         // ===== WARNA TEMA =====
-        Color tosca = new Color(0, 137, 132);
-        Color biru = new Color(52, 152, 219);
+        Color merah = new Color(137, 0, 37);
+        Color putih = Color.WHITE;
         Color orange = new Color(243, 156, 18);
         Color bg = new Color(245, 247, 250);
 
         // ================= HEADER =================
         JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(tosca);
+        header.setBackground(merah);
         header.setPreferredSize(new Dimension(0, 55));
         header.setBorder(new EmptyBorder(0, 20, 0, 20));
 
@@ -35,7 +36,9 @@ public class UserDashboard extends JFrame {
         lblTitle.setForeground(Color.WHITE);
 
         JLabel lblDate = new JLabel(
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("EEEE, dd MMM yyyy HH:mm"))
+                LocalDateTime.now().format(
+                        DateTimeFormatter.ofPattern("EEEE, dd MMM yyyy HH:mm")
+                )
         );
         lblDate.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         lblDate.setForeground(Color.WHITE);
@@ -46,30 +49,26 @@ public class UserDashboard extends JFrame {
 
         // ================= SIDEBAR =================
         JPanel sidebar = new JPanel();
-        sidebar.setBackground(biru);
+        sidebar.setBackground(putih);
         sidebar.setPreferredSize(new Dimension(200, 0));
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setBorder(new EmptyBorder(20, 10, 20, 10));
 
-        sidebar.add(createMenuButton("🏠  Beranda"));
+        sidebar.add(createMenuButton("Beranda"));
+
         JButton btnRiwayat = createMenuButton("Riwayat Servis");
         btnRiwayat.addActionListener(e -> new RiwayatServisFrame());
         sidebar.add(btnRiwayat);
-        setVisible(true);
 
         JButton btnStruk = createMenuButton("Lihat Struk");
-        btnStruk.addActionListener(e ->{
+        btnStruk.addActionListener(e -> {
             DataManager.loadSukuCadang();
             DataManager.loadTransaksi();
             new FormTransaksi();
         });
-
         sidebar.add(btnStruk);
 
         add(sidebar, BorderLayout.WEST);
-
-        setVisible(true); // <-- INI WAJIB
-
 
         // ================= CONTENT =================
         JPanel content = new JPanel(new BorderLayout());
@@ -80,7 +79,6 @@ public class UserDashboard extends JFrame {
         lblHeader.setFont(new Font("Segoe UI", Font.BOLD, 20));
         content.add(lblHeader, BorderLayout.NORTH);
 
-        // ===== CARD AREA =====
         JPanel cardPanel = new JPanel(new GridLayout(1, 2, 20, 0));
         cardPanel.setOpaque(false);
         cardPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
@@ -95,7 +93,7 @@ public class UserDashboard extends JFrame {
         cardPanel.add(createCard(
                 "Lihat Struk",
                 "Cetak struk pembayaran terakhir",
-                biru,
+                putih,
                 () -> {
                     DataManager.loadSukuCadang();
                     DataManager.loadTransaksi();
@@ -106,7 +104,18 @@ public class UserDashboard extends JFrame {
         content.add(cardPanel, BorderLayout.CENTER);
         add(content, BorderLayout.CENTER);
 
-        add(content, BorderLayout.CENTER);
+        // ================= FOOTER =================
+        JPanel footer = new JPanel();
+        footer.setBackground(merah);
+        footer.setPreferredSize(new Dimension(0, 30));
+
+        JLabel lblFooter = new JLabel("© BENGKEL UMM MOTORS");
+        lblFooter.setForeground(Color.WHITE);
+        lblFooter.setFont(new Font("Arial", Font.PLAIN, 11));
+
+        footer.add(lblFooter);
+        add(footer, BorderLayout.SOUTH);
+
         setVisible(true);
     }
 
@@ -125,12 +134,10 @@ public class UserDashboard extends JFrame {
         btn.setBorder(new EmptyBorder(8, 15, 8, 15));
 
         btn.addMouseListener(new MouseAdapter() {
-            @Override
             public void mouseEntered(MouseEvent e) {
                 btn.setBackground(hover);
             }
 
-            @Override
             public void mouseExited(MouseEvent e) {
                 btn.setBackground(normal);
             }
@@ -152,38 +159,25 @@ public class UserDashboard extends JFrame {
 
         JLabel lblTitle = new JLabel(title);
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        lblTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel lblDesc = new JLabel(desc);
         lblDesc.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         lblDesc.setForeground(Color.GRAY);
-        lblDesc.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel lblLine = new JLabel(" ");
-        lblLine.setOpaque(true);
-        lblLine.setBackground(accent);
-        lblLine.setMaximumSize(new Dimension(Integer.MAX_VALUE, 4));
+        JLabel line = new JLabel();
+        line.setOpaque(true);
+        line.setBackground(accent);
+        line.setPreferredSize(new Dimension(0, 4));
 
         card.add(lblTitle);
         card.add(Box.createVerticalStrut(5));
         card.add(lblDesc);
         card.add(Box.createVerticalStrut(15));
-        card.add(lblLine);
+        card.add(line);
 
         card.addMouseListener(new MouseAdapter() {
-            @Override
             public void mouseClicked(MouseEvent e) {
                 action.run();
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                card.setBackground(new Color(252, 252, 252));
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                card.setBackground(Color.WHITE);
             }
         });
 
@@ -191,10 +185,6 @@ public class UserDashboard extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new UserDashboard();
-        });
+        SwingUtilities.invokeLater(UserDashboard::new);
     }
-
-
 }
