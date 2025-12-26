@@ -6,6 +6,7 @@ import org.bengkel.util.DataManager;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 
 public class LoginFrame extends JFrame {
 
@@ -19,32 +20,55 @@ public class LoginFrame extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        Color tosca = new Color(0, 137, 132);
-        Color kuning = new Color(255, 171, 0);
+        Color merah = new Color(137, 0, 37);
+        Color putih = new Color(255, 255, 255);
+        Color orange = new Color(255,140,0);
 
         JPanel mainPanel = new JPanel();
-        mainPanel.setBackground(tosca);
+        mainPanel.setBackground(merah);
         mainPanel.setLayout(new BorderLayout());
 
         // ===== LOGO =====
-        JLabel lblLogo = new JLabel("🔧", SwingConstants.CENTER);
-        lblLogo.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 80));
-        lblLogo.setForeground(Color.WHITE);
+        ImageIcon logoIcon = new ImageIcon(
+                getClass().getResource("/images/logo.png")
+        );
 
-        JLabel lblTitle = new JLabel("BENGKEL\nANUGRAH MOTOR", SwingConstants.CENTER);
+        Image img = logoIcon.getImage();
+
+        int targetHeight = 80;
+        int targetWidth = (img.getWidth(null) * targetHeight) / img.getHeight(null);
+
+        Image scaled = img.getScaledInstance(
+                targetWidth,
+                targetHeight,
+                Image.SCALE_SMOOTH
+        );
+
+        JLabel lblLogo = new JLabel(new ImageIcon(scaled));
+        lblLogo.setHorizontalAlignment(SwingConstants.CENTER);
+
+        //==== TITLE =====
+        JLabel lblTitle = new JLabel(
+                "<html><center>BENGKEL<br>SANG SURYA MOTOR</center></html>",
+                SwingConstants.CENTER
+        );
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        lblTitle.setForeground(kuning);
+        lblTitle.setForeground(putih);
 
-        JPanel logoPanel = new JPanel(new GridLayout(2,1));
+        //====== PANEL LOGO=====
+        JPanel logoPanel = new JPanel(new GridLayout(2, 1, 5, 5));
         logoPanel.setOpaque(false);
+        logoPanel.setBorder(new EmptyBorder(20, 0, 20, 0));
+
         logoPanel.add(lblLogo);
         logoPanel.add(lblTitle);
 
         mainPanel.add(logoPanel, BorderLayout.NORTH);
 
+
         // ===== FORM =====
         JPanel formPanel = new JPanel();
-        formPanel.setBackground(kuning);
+        formPanel.setBackground(putih);
         formPanel.setBorder(new EmptyBorder(30,30,30,30));
         formPanel.setLayout(new GridLayout(5,1,10,10));
 
@@ -60,13 +84,28 @@ public class LoginFrame extends JFrame {
                 "USER"
         });
 
+        //===== BUTTON =====
         JButton btnLogin = new JButton("Masuk");
-        btnLogin.setBackground(tosca);
+        btnLogin.setBackground(orange);
         btnLogin.setForeground(Color.WHITE);
         btnLogin.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnLogin.setFocusPainted(false);
 
         btnLogin.addActionListener(e -> login());
+
+        btnLogin.addMouseListener(new java.awt.event.MouseAdapter(){
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                super.mouseEntered(e);
+                btnLogin.setBackground(orange.darker());
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                super.mouseExited(e);
+                btnLogin.setBackground(Color.orange);
+            }
+        });
 
         formPanel.add(txtUsername);
         formPanel.add(txtPassword);
